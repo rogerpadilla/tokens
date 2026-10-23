@@ -1,6 +1,6 @@
 {
   "name": "tokens",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Design tokens shared by Roger Padilla's sites: GitHub Primer's colour roles, generated from @primer/primitives, for CSS and scripts, plus one motion, radius and spacing scale and a WCAG contrast helper.",
   "license": "MIT",
   "type": "module",

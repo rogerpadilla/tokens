@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { audit, styleOf, tokensIn } from '../check.js';
+import { audit, palette, sources, styleOf, tokensIn } from '../check.js';
 
 describe('audit', () => {
   it('allows a colour only where a token is declared', () => {
@@ -43,5 +43,31 @@ describe('styleOf', () => {
 describe('tokensIn', () => {
   it('maps each declared token to its value', () => {
     expect(tokensIn(':root { --a: #fff; --b: var(--a) }')).toEqual(new Map([['--a', '#fff'], ['--b', 'var(--a)']]));
+  });
+});
+
+describe('palette', () => {
+  const css = ':root { --bgColor-default: light-dark(#eeeeee, #121316); --brand: #5c2e1e; --edge: var(--fgColor-muted); --ring: var(--brand); }';
+
+  it("is Primer's roles in one mode, with the site's own declarations over them", () => {
+    const light = palette(css, 'light');
+    expect(light.get('--bgColor-default')).toBe('#eeeeee');
+    expect(light.get('--fgColor-default')).toBe('#1f2328');
+    expect(light.get('--brand')).toBe('#5c2e1e');
+    expect(palette(css, 'dark').get('--bgColor-default')).toBe('#121316');
+  });
+
+  it('follows a var() to the value it names, in the package or the site', () => {
+    expect(palette(css, 'light').get('--edge')).toBe('#59636e');
+    expect(palette(css, 'dark').get('--edge')).toBe('#9198a1');
+    expect(palette(css, 'light').get('--ring')).toBe('#5c2e1e');
+  });
+});
+
+describe('sources', () => {
+  it('reads the stylesheets, components and scripts under a directory, past what it skips', () => {
+    const paths = sources('scripts', { skip: ['scripts/build'] }).map(({ path }) => path);
+    expect(paths).toContain('scripts/check.test.ts');
+    expect(paths.some((path) => path.startsWith('scripts/build'))).toBe(false);
   });
 });

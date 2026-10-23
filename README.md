@@ -6,12 +6,12 @@ The design tokens every site of mine reads: uql-orm.dev, variability, rogerpadil
 - `primer.js`: the same roles resolved, `primer['bgColor-default'].dark`, for what cannot read CSS: an email, a social card, a `theme-color` meta tag.
 - `scale.css`: one motion scale (`--ease-*`, `--duration-*`, near zero under `prefers-reduced-motion`), one radius scale (`--radius-*`) and one spacing scale (`--space-*`).
 - `contrast.js`: WCAG contrast between two colours, hex or a browser's computed value, for a site's own palette tests. The tests here hold Primer's text and labels to 4.5:1 with it.
-- `check.js`: `audit(files)`, the rules below as one test a site runs over its stylesheets.
+- `check.js`: `audit(files)`, the rules below as one test a site runs over its stylesheets, `sources(dir)` to read them, and `palette(css, mode)`, every token's value in one mode (Primer's, under the site's own), for its contrast tests.
 
 ## Use
 
 ```sh
-bun add github:rogerpadilla/tokens#v1.3.0
+bun add github:rogerpadilla/tokens#v1.4.0
 ```
 
 ```css
@@ -35,8 +35,12 @@ import { primer } from 'tokens/primer.js';
 - Each site runs `audit()` over its stylesheets, so a colour written outside a token, or a `var()` naming nothing, fails a test rather than a review:
 
 ```ts
-import { audit } from 'tokens/check.js';
-expect(audit(files, { external: ['--sl-'] })).toEqual([]);
+import { audit, palette, sources } from 'tokens/check.js';
+import { contrast } from 'tokens/contrast.js';
+
+expect(audit(sources('src'), { external: ['--sl-'] })).toEqual([]);
+const light = palette(readFileSync('src/styles/tokens.css', 'utf8'), 'light');
+expect(contrast(light.get('--fgColor-muted'), light.get('--bgColor-default'))).toBeGreaterThanOrEqual(4.5);
 ```
 
 ## Layout
