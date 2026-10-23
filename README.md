@@ -40,7 +40,7 @@ import { contrast } from 'tokens/contrast.js';
 
 expect(audit(sources('src'), { external: ['--sl-'] })).toEqual([]);
 const light = palette(readFileSync('src/styles/tokens.css', 'utf8'), 'light');
-expect(contrast(light.get('--fgColor-muted'), light.get('--bgColor-default'))).toBeGreaterThanOrEqual(4.5);
+expect(contrast(light.get('--fgColor-muted') ?? '', light.get('--bgColor-default') ?? '')).toBeGreaterThanOrEqual(4.5);
 ```
 
 ## Layout
