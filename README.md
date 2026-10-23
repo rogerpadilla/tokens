@@ -6,11 +6,12 @@ The design tokens every site of mine reads: uql-orm.dev, variability, rogerpadil
 - `primer.js`: the same roles resolved, `primer['bgColor-default'].dark`, for what cannot read CSS: an email, a social card, a `theme-color` meta tag.
 - `scale.css`: one motion scale (`--ease-*`, `--duration-*`, near zero under `prefers-reduced-motion`), one radius scale (`--radius-*`) and one spacing scale (`--space-*`).
 - `contrast.js`: WCAG contrast between two colours, hex or a browser's computed value, for a site's own palette tests. The tests here hold Primer's text and labels to 4.5:1 with it.
+- `check.js`: `audit(files)`, the rules below as one test a site runs over its stylesheets.
 
 ## Use
 
 ```sh
-bun add github:rogerpadilla/tokens#v1.2.0
+bun add github:rogerpadilla/tokens#v1.3.0
 ```
 
 ```css
@@ -24,6 +25,19 @@ import { primer } from 'tokens/primer.js';
 ```
 
 `light-dark()` picks its side from `color-scheme`, which this package leaves to the site: set `color-scheme: light dark` to follow the OS, or `light`/`dark` to pin one, from whatever attribute the site's theme toggle writes. A light-only site sets `color-scheme: light` and gets Primer's light values.
+
+## Rules
+
+- Read a role or a scale step; never write a colour, a duration, a radius or a spacing value in a component.
+- A brand restates a role, by its name, in the site's token file. A colour no role stands for is a token of the site's own, named as Primer names one: what it belongs to, then the property, then the state (`--media-borderColor-hover`), or `--brand-<name>` for a brand colour several things read.
+- What cannot read CSS (an email, a social card, a `theme-color` tag) reads `primer.js`.
+- A site that restates roles tests them with `contrast()`: 4.5:1 for text, 3:1 for an icon or a field's edge.
+- Each site runs `audit()` over its stylesheets, so a colour written outside a token, or a `var()` naming nothing, fails a test rather than a review:
+
+```ts
+import { audit } from 'tokens/check.js';
+expect(audit(files, { external: ['--sl-'] })).toEqual([]);
+```
 
 ## Layout
 
