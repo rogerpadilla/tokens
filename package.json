@@ -1,0 +1,20 @@
+{
+  "name": "tokens",
+  "version": "1.0.0",
+  "description": "Design tokens shared by Roger Padilla's sites: GitHub Primer's colour roles, generated from @primer/primitives, plus one motion and radius scale.",
+  "license": "MIT",
+  "type": "module",
+  "files": ["primer.css", "scale.css"],
+  "exports": {
+    "./primer.css": "./primer.css",
+    "./scale.css": "./scale.css"
+  },
+  "scripts": {
+    "build": "bun scripts/build.ts",
+    "check": "bun scripts/build.ts --check && bun test"
+  },
+  "devDependencies": {
+    "@primer/primitives": "11.10.0",
+    "@types/bun": "1.4.4"
+  }
+}

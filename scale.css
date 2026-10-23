@@ -1,0 +1,19 @@
+/* One motion and one shape for every site. Rem, so a reader who scales their type scales these too. */
+:root {
+  /* Arriving under its own power: front-loaded, so it reads as fast. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Leaving: accelerating, so it is gone rather than easing to a halt on its way. */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  /* A size or position morph, which an expo-out finishes before the eye finds it. */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+}
