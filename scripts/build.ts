@@ -19,6 +19,7 @@ export const ROLES = [
   'focus-outlineColor',
   'fgColor-default',
   'fgColor-muted',
+  'fgColor-disabled',
   'fgColor-onEmphasis',
   'fgColor-accent',
   'bgColor-accent-emphasis',

@@ -8,7 +8,7 @@ The design tokens every site of mine reads: uql-orm.dev, variability, rogerpadil
 ## Use
 
 ```sh
-bun add github:rogerpadilla/tokens#v1.0.0
+bun add github:rogerpadilla/tokens#v1.1.0
 ```
 
 ```css

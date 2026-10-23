@@ -16,6 +16,7 @@
   --focus-outlineColor: light-dark(#0969da, #1f6feb);
   --fgColor-default: light-dark(#1f2328, #f0f6fc);
   --fgColor-muted: light-dark(#59636e, #9198a1);
+  --fgColor-disabled: light-dark(#818b98, #656c76);
   --fgColor-onEmphasis: #ffffff;
   --fgColor-accent: light-dark(#0969da, #4493f8);
   --bgColor-accent-emphasis: light-dark(#0969da, #1f6feb);
