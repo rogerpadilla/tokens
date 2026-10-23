@@ -35,3 +35,10 @@
   --bgColor-done-emphasis: light-dark(#8250df, #8957e5);
   --underlineNav-borderColor-active: light-dark(#fd8c73, #f78166);
 }
+
+:root,
+[data-theme] {
+  --bgColor-accent-emphasis-hover: color-mix(in srgb, var(--bgColor-accent-emphasis), #000 14%);
+  --bgColor-accent-muted-hover: color-mix(in srgb, var(--fgColor-accent) 26%, transparent);
+  --fgColor-accent-hover: color-mix(in oklab, var(--fgColor-accent), var(--fgColor-default) 35%);
+}

@@ -1,4 +1,4 @@
-/* One motion and one shape for every site. Rem, so a reader who scales their type scales these too. */
+/* One motion, one shape and one spacing scale for every site. Rem, so a reader who scales their type scales these too. */
 :root {
   /* Arriving under its own power: front-loaded, so it reads as fast. */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -16,4 +16,25 @@
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-full: 9999px;
+
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.25rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+  --space-3xl: 3rem;
+  --space-4xl: 4rem;
+  --space-5xl: 5rem;
+}
+
+/* Near zero rather than zero, so a transition still ends and its `transitionend` still fires. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0.01ms;
+    --duration-base: 0.01ms;
+    --duration-slow: 0.01ms;
+  }
 }
