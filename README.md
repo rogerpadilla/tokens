@@ -4,7 +4,7 @@ The design tokens every site of mine reads: uql-orm.dev, variability, rogerpadil
 
 - `primer.css`: GitHub Primer's colour roles, by Primer's own names (`--bgColor-default`, `--fgColor-muted`, `--borderColor-default`, ...), each a `light-dark()` pair. Generated from [`@primer/primitives`](https://github.com/primer/primitives) by `scripts/build.ts`, never edited by hand; [primer.style](https://primer.style/product/primitives/color) documents what each role is for. Beside them, the three hovers Primer leaves to a site, derived from the roles (`--bgColor-accent-emphasis-hover`, `--bgColor-accent-muted-hover`, `--fgColor-accent-hover`).
 - `primer.js`: the same roles resolved, `primer['bgColor-default'].dark`, for what cannot read CSS: an email, a social card, a `theme-color` meta tag.
-- `scale.css`: one motion scale (`--ease-*`, `--duration-*`, near zero under `prefers-reduced-motion`), one radius scale (`--radius-*`) and one spacing scale (`--space-*`).
+- `scale.css`: one motion scale (`--ease-*`, `--duration-*`, near zero under `prefers-reduced-motion`), one type ladder (`--text-*`), one radius scale (`--radius-*`) and one spacing scale (`--space-*`).
 - `contrast.js`: WCAG contrast between two colours, hex or a browser's computed value, for a site's own palette tests. The tests here hold Primer's text and labels to 4.5:1 with it.
 - `check.js`: `audit(files)`, the rules below as one test a site runs over its stylesheets, `sources(dir)` to read them, and `palette(css, mode)`, every token's value in one mode (Primer's, under the site's own), for its contrast tests.
 

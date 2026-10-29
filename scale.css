@@ -1,4 +1,4 @@
-/* One motion, one shape and one spacing scale for every site. Rem, so a reader who scales their type scales these too. */
+/* One motion, one shape, one type and one spacing scale for every site. Rem, so a reader who scales their type scales these too. */
 :root {
   /* Arriving under its own power: front-loaded, so it reads as fast. */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -10,6 +10,16 @@
   --duration-fast: 150ms;
   --duration-base: 250ms;
   --duration-slow: 400ms;
+
+  /* The type ladder: eight rungs a step apart, so headings and captions never collide. */
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.75rem;
 
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
