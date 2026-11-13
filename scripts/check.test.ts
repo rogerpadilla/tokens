@@ -50,6 +50,10 @@ describe('audit, on the scale', () => {
     expect(audit([{ path: 'a.css', text }])).toEqual([]);
   });
 
+  it('allows an em spacing, which follows its own text where the rem scale cannot', () => {
+    expect(audit([{ path: 'a.css', text: '.icon { gap: 0.3em; } li { padding-inline-start: 1.25em; }' }])).toEqual([]);
+  });
+
   it('leaves selectors and media queries alone, though they hold a colon and a length', () => {
     const text = '@media (max-width: 48em) { a:hover { color: var(--fgColor-accent); } }';
     expect(audit([{ path: 'a.css', text }])).toEqual([]);

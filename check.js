@@ -8,13 +8,16 @@ const COLOUR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab)\(/gi;
 /** A token set in CSS or a `style` attribute (`--x: ...`), or from a script (`setProperty('--x', ...)`, `{ '--x': ... }`). */
 const DEFINITION = /(--[\w-]+)\s*:|['"](--[\w-]+)['"]\s*[:,]/g;
 const PACKAGED = ['primer.css', 'scale.css'].map((file) => readFileSync(new URL(file, import.meta.url), 'utf8'));
-/** The properties scale.css owns, and a number written in one: a time, a radius, a spacing. Zero is no value, and spacing allows a hairline nudge of 2px. */
+/**
+ * The properties scale.css owns, and a number written in one: a time, a radius, a spacing. Zero is
+ * no value; spacing allows a hairline nudge of 2px, and `em`, which follows its own text.
+ */
 const SCALES = [
   { property: /^(?:transition|animation)(?:-duration|-delay)?$/, number: /(?<![\w.-])(\d*\.?\d+)(m?s)\b/g, allows: () => false },
   { property: /^border-(?:[a-z]+-)*radius$/, number: /(?<![\w.-])(\d*\.?\d+)(px|r?em|%)/g, allows: () => false },
   {
     property: /^(?:(?:padding|margin)(?:-[a-z]+)*|(?:row-|column-)?gap)$/,
-    number: /(?<![\w.-])(-?\d*\.?\d+)(px|r?em)\b/g,
+    number: /(?<![\w.-])(-?\d*\.?\d+)(px|rem)\b/g,
     allows: (amount, unit) => unit === 'px' && Math.abs(amount) <= 2,
   },
 ];

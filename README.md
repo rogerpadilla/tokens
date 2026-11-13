@@ -11,7 +11,7 @@ The design tokens every site of mine reads: uql-orm.dev, variability, rogerpadil
 ## Use
 
 ```sh
-bun add github:rogerpadilla/tokens#v1.6.0
+bun add github:rogerpadilla/tokens#v1.6.1
 ```
 
 ```css
@@ -32,7 +32,7 @@ import { primer } from 'tokens/primer.js';
 - A brand restates a role, by its name, in the site's token file. A colour no role stands for is a token of the site's own, named as Primer names one: what it belongs to, then the property, then the state (`--media-borderColor-hover`), or `--brand-<name>` for a brand colour several things read.
 - What cannot read CSS (an email, a social card, a `theme-color` tag) reads `primer.js`.
 - A site that restates roles tests them with `contrast()`: 4.5:1 for text, 3:1 for an icon or a field's edge.
-- Each site runs `audit()` over its stylesheets, so a colour, a duration, a radius or a spacing written outside a token, or a `var()` naming nothing, fails a test rather than a review. Zero is no value, and spacing allows a hairline nudge of up to 2px; a value off the scale on purpose is declared as a site token, which also names why:
+- Each site runs `audit()` over its stylesheets, so a colour, a duration, a radius or a spacing written outside a token, or a `var()` naming nothing, fails a test rather than a review. Zero is no value, spacing allows a hairline nudge of up to 2px and an `em` that follows its own text, a value off the scale on purpose is declared as a site token, which also names why:
 
 ```ts
 import { audit, palette, sources } from 'tokens/check.js';
