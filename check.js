@@ -9,8 +9,8 @@ const LINE_COMMENT = /^[ \t]*\/\/.*$/gm;
 /** A print block, one nesting level deep: paper is not a theme, so its literal black is the right answer. */
 const PRINT = /@media\s+print\s*\{(?:[^{}]|\{[^{}]*\})*\}/g;
 const COLOUR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab)\(/gi;
-/** A token set in CSS or a `style` attribute (`--x: ...`), or from a script (`setProperty('--x', ...)`, `{ '--x': ... }`). */
-const DEFINITION = /(--[\w-]+)\s*:|['"](--[\w-]+)['"]\s*[:,]/g;
+/** A token set in CSS or a `style` attribute (`--x: ...`), or from a script (`setProperty('--x', ...)`, `{ '--x': ... }`); a quoted CLI flag is neither. */
+const DEFINITION = /(--[\w-]+)\s*:|['"](--[\w-]+)['"]\s*:|setProperty\(\s*['"](--[\w-]+)['"]/g;
 const PACKAGED = ['primer.css', 'scale.css'].map((file) => readFileSync(new URL(file, import.meta.url), 'utf8'));
 /**
  * The properties scale.css owns, and a number written in one: a time, a radius, a spacing. Zero is
@@ -55,7 +55,7 @@ export function tokensIn(css) {
  */
 export function audit(files, { external = [], colourFiles } = {}) {
   const styles = files.map(({ path, text }) => ({ path, css: styleOf(path, text).replace(PRINT, '') }));
-  const defined = new Set([...files.map(({ text }) => text), ...PACKAGED].flatMap((text) => [...text.matchAll(DEFINITION)].map((match) => match[1] ?? match[2])));
+  const defined = new Set([...files.map(({ text }) => text), ...PACKAGED].flatMap((text) => [...text.matchAll(DEFINITION)].map((match) => match[1] ?? match[2] ?? match[3])));
   return styles.flatMap(({ path, css }) => {
     const outsideTokens = css.replace(/--[\w-]+\s*:[^;}]+/g, '');
     const colours = colourFiles
@@ -75,7 +75,7 @@ export function audit(files, { external = [], colourFiles } = {}) {
 /** Every custom property `files` define that nothing in them reads, by `var()` or by name as a mixin's argument; `consumed` names those a third party reads. */
 export function unused(files, { consumed = [] } = {}) {
   const texts = files.map(({ text }) => text.replace(COMMENT, '').replace(LINE_COMMENT, ''));
-  const defined = new Set(texts.flatMap((text) => [...text.matchAll(DEFINITION)].map((match) => match[1] ?? match[2])));
+  const defined = new Set(texts.flatMap((text) => [...text.matchAll(DEFINITION)].map((match) => match[1] ?? match[2] ?? match[3])));
   const read = new Set(
     texts.flatMap((text) => [
       ...[...text.matchAll(/var\(\s*(--[\w-]+)/g)].map(([, name]) => name),

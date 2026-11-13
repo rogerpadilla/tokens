@@ -85,6 +85,10 @@ describe('unused', () => {
     expect(unused([{ path: 'a.css', text: ':root { --read: 1px; --dead: 2px; } .a { width: var(--read); }' }])).toEqual(['--dead']);
   });
 
+  it("takes a script's quoted CLI flag for an argument, not a token", () => {
+    expect(unused([{ path: 'a.ts', text: "spawn('yt-dlp', ['--no-playlist', '--dump-json', url]);" }])).toEqual([]);
+  });
+
   it('counts a mixin argument and a script definition, and a token a third party reads', () => {
     const files = [
       { path: 'a.css', text: ':root { --blur: 4px; --vendor-pad: 1rem; } .a { @mixin glass --blur; }' },
