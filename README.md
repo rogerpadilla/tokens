@@ -11,7 +11,7 @@ The design tokens every site of mine reads: uql-orm.dev, variability, rogerpadil
 ## Use
 
 ```sh
-bun add github:rogerpadilla/tokens#v1.8.1
+bun add github:rogerpadilla/tokens#v1.8.2
 ```
 
 ```css

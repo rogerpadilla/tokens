@@ -72,7 +72,7 @@ export function audit(files, { external = [], colourFiles } = {}) {
   });
 }
 
-/** Every custom property `files` define that nothing in them reads, by `var()` or by name as a mixin's argument; `consumed` names those a third party reads. */
+/** Every custom property `files` define that nothing in them reads, by `var()` or by name as a mixin's argument; `consumed` prefixes are those a third party reads. */
 export function unused(files, { consumed = [] } = {}) {
   const texts = files.map(({ text }) => text.replace(COMMENT, '').replace(LINE_COMMENT, ''));
   const defined = new Set(texts.flatMap((text) => [...text.matchAll(DEFINITION)].map((match) => match[1] ?? match[2] ?? match[3])));
@@ -82,7 +82,7 @@ export function unused(files, { consumed = [] } = {}) {
       ...[...text.matchAll(/@mixin\s+[\w-]+\s+([^;{]+)/g)].flatMap(([, args]) => args.match(/--[\w-]+/g) ?? []),
     ]),
   );
-  return [...defined].filter((name) => !read.has(name) && !consumed.includes(name)).sort();
+  return [...defined].filter((name) => !read.has(name) && !consumed.some((prefix) => name.startsWith(prefix))).sort();
 }
 
 /** The stylesheets, components and scripts under `dir`, for `audit()`; a path starting with one in `skip` is left out. */

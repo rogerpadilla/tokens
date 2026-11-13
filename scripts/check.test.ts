@@ -85,6 +85,10 @@ describe('unused', () => {
     expect(unused([{ path: 'a.css', text: ':root { --read: 1px; --dead: 2px; } .a { width: var(--read); }' }])).toEqual(['--dead']);
   });
 
+  it("matches consumed by prefix, as a framework reads a whole family of a site's tokens", () => {
+    expect(unused([{ path: 'a.css', text: ':root { --sl-color-blue: red; --sl-font: serif; }' }], { consumed: ['--sl-'] })).toEqual([]);
+  });
+
   it("takes a script's quoted CLI flag for an argument, not a token", () => {
     expect(unused([{ path: 'a.ts', text: "spawn('yt-dlp', ['--no-playlist', '--dump-json', url]);" }])).toEqual([]);
   });
