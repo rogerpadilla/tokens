@@ -9,6 +9,8 @@ const LINE_COMMENT = /^[ \t]*\/\/.*$/gm;
 /** A print block, one nesting level deep: paper is not a theme, so its literal black is the right answer. */
 const PRINT = /@media\s+print\s*\{(?:[^{}]|\{[^{}]*\})*\}/g;
 const COLOUR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab)\(/gi;
+/** A width a media query writes, rather than naming one of breakpoints.css's. */
+const WIDTH = /\((?:min-|max-)?width\b[^)]*\)/g;
 /** A token set in CSS or a `style` attribute (`--x: ...`), or from a script (`setProperty('--x', ...)`, `{ '--x': ... }`); a quoted CLI flag is neither. */
 const DEFINITION = /(--[\w-]+)\s*:|['"](--[\w-]+)['"]\s*:|setProperty\(\s*['"](--[\w-]+)['"]/g;
 const PACKAGED = ['primer.css', 'scale.css'].map((file) => readFileSync(new URL(file, import.meta.url), 'utf8'));
@@ -50,7 +52,7 @@ export function tokensIn(css) {
 
 /**
  * What breaks the rules: a colour, a duration, a radius or a spacing written anywhere but a custom
- * property, a `var()` naming nothing anywhere in `files`. With `colourFiles`, a colour is allowed only
+ * property, a width a media query writes rather than naming a breakpoint, a `var()` naming nothing anywhere in `files`. With `colourFiles`, a colour is allowed only
  * in those files, a token elsewhere included.
  */
 export function audit(files, { external = [], colourFiles } = {}) {
@@ -68,7 +70,8 @@ export function audit(files, { external = [], colourFiles } = {}) {
       .map(([, name]) => name)
       .filter((name) => !defined.has(name) && !external.some((prefix) => name.startsWith(prefix)))
       .map((name) => `${path}: ${name} is defined nowhere`);
-    return [...literals, ...unknown];
+    const widths = [...css.matchAll(/@media([^{]*)\{/g)].flatMap(([, query]) => [...query.matchAll(WIDTH)].map(([width]) => `${path}: ${width} outside a breakpoint`));
+    return [...literals, ...widths, ...unknown];
   });
 }
 

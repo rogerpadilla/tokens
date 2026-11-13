@@ -24,10 +24,20 @@ const DARK = `[data-color-mode="dark"] {
 
 describe('buildScale', () => {
   const css = ':root {\n  --duration-fast: 150ms;\n  --duration-base: 250ms;\n  --duration-slow: 400ms;\n}\n@media (prefers-reduced-motion: reduce) {\n  :root { --duration-fast: 0.01ms; }\n}';
+  const breakpoints = '/* A phone. */\n@custom-media --below-phone (width < 40rem);\n@custom-media --from-phone (width >= 40rem);\n@custom-media --below-wide (width < 60rem);\n@custom-media --from-wide (width >= 60rem);\n';
 
   it("gives scripts the duration scale in milliseconds, from scale.css's first block", () => {
-    expect(buildScale(css)['scale.js']).toContain('export const duration = { fast: 150, base: 250, slow: 400 };\n');
-    expect(buildScale(css)['scale.d.ts']).toContain('export declare const duration: { readonly fast: 150; readonly base: 250; readonly slow: 400 };\n');
+    expect(buildScale(css, breakpoints)['scale.js']).toContain('export const duration = { fast: 150, base: 250, slow: 400 };\n');
+    expect(buildScale(css, breakpoints)['scale.d.ts']).toContain('export declare const duration: { readonly fast: 150; readonly base: 250; readonly slow: 400 };\n');
+  });
+
+  it("gives scripts each breakpoint's queries, as a `matchMedia` or an image's `sizes` reads them", () => {
+    expect(buildScale(css, breakpoints)['scale.js']).toContain(
+      "export const breakpoint = { phone: { below: '(width < 40rem)', from: '(width >= 40rem)' }, wide: { below: '(width < 60rem)', from: '(width >= 60rem)' } };\n",
+    );
+    expect(buildScale(css, breakpoints)['scale.d.ts']).toContain(
+      "export declare const breakpoint: { readonly phone: { readonly below: '(width < 40rem)'; readonly from: '(width >= 40rem)' }; readonly wide: { readonly below: '(width < 60rem)'; readonly from: '(width >= 60rem)' } };\n",
+    );
   });
 });
 

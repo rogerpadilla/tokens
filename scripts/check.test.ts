@@ -60,8 +60,24 @@ describe('audit, on the scale', () => {
   });
 
   it('leaves selectors and media queries alone, though they hold a colon and a length', () => {
-    const text = '@media (max-width: 48em) { a:hover { color: var(--fgColor-accent); } }';
+    const text = '@media (--below-phone) { a:hover { color: var(--fgColor-accent); } }';
     expect(audit([{ path: 'a.css', text }])).toEqual([]);
+  });
+});
+
+describe('audit, on the breakpoints', () => {
+  it('reports a width a media query writes, which breakpoints.css names', () => {
+    const text = '@media (max-width: 48em) { .a { display: none; } }\n.b { @media (width >= 60rem) { display: flex; } }';
+    expect(audit([{ path: 'a.css', text }])).toEqual(['a.css: (max-width: 48em) outside a breakpoint', 'a.css: (width >= 60rem) outside a breakpoint']);
+  });
+
+  it('allows a named breakpoint, and a query on anything but the width', () => {
+    const text = '@media (--from-wide) and (hover: hover) { .a { display: flex; } }\n@media (prefers-reduced-motion: reduce) { .b { animation: none; } }';
+    expect(audit([{ path: 'a.css', text }])).toEqual([]);
+  });
+
+  it("counts the control's least target as a packaged token", () => {
+    expect(audit([{ path: 'a.css', text: '.a { min-block-size: var(--control-minTarget); }' }])).toEqual([]);
   });
 });
 

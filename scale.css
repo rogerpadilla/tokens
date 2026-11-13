@@ -27,6 +27,9 @@
   --radius-xl: 1rem;
   --radius-full: 9999px;
 
+  /* The least a finger can hit, Primer's and Apple's 44px: a button, a page in a pager, a value to pick. */
+  --control-minTarget: 2.75rem;
+
   --space-3xs: 0.125rem;
   --space-2xs: 0.25rem;
   --space-xs: 0.5rem;

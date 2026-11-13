@@ -1,0 +1,16 @@
+/* The widths a layout changes at, each from it and below it: `@media (--from-wide)`. A site imports this file into each sheet that names one, and `scale.js` gives scripts the same queries (`breakpoint.wide.from`). */
+/* A phone held narrow. */
+@custom-media --below-narrow (width < 30rem);
+@custom-media --from-narrow (width >= 30rem);
+/* A phone. */
+@custom-media --below-phone (width < 40rem);
+@custom-media --from-phone (width >= 40rem);
+/* A tablet held upright, 720px. */
+@custom-media --below-tablet (width < 45rem);
+@custom-media --from-tablet (width >= 45rem);
+/* Room for two columns side by side. */
+@custom-media --below-wide (width < 60rem);
+@custom-media --from-wide (width >= 60rem);
+/* A desktop, 1088px. */
+@custom-media --below-widest (width < 68rem);
+@custom-media --from-widest (width >= 68rem);
