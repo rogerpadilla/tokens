@@ -23,6 +23,39 @@ describe('audit', () => {
   });
 });
 
+describe('audit, on the scale', () => {
+  it('reports a duration, a radius and a spacing written as a number', () => {
+    const text = '.a { transition: opacity 300ms; border-radius: 6px; padding: 1rem 0.75rem; gap: 16px; animation-delay: 0.2s; }';
+    expect(audit([{ path: 'a.css', text }])).toEqual([
+      'a.css: transition 300ms outside a token',
+      'a.css: border-radius 6px outside a token',
+      'a.css: padding 1rem outside a token',
+      'a.css: padding 0.75rem outside a token',
+      'a.css: gap 16px outside a token',
+      'a.css: animation-delay 0.2s outside a token',
+    ]);
+  });
+
+  it('reports a percentage radius, which --radius-full already says', () => {
+    expect(audit([{ path: 'a.css', text: '.dot { border-start-start-radius: 50%; }' }])).toEqual(['a.css: border-start-start-radius 50% outside a token']);
+  });
+
+  it('allows the scale, zero, a hairline nudge, and any value declared as a token', () => {
+    const text = [
+      ':root { --gutter: 7.5rem; --blink: 2s; }',
+      '.a { transition: opacity var(--duration-fast) var(--ease-out); border-radius: var(--radius-md); }',
+      '.b { margin: 0 auto; padding: 0; margin-block-start: -1px; padding-inline: 2px; gap: var(--space-xs) var(--gutter); }',
+      '.c:hover { animation: none; transition-duration: 0s; }',
+    ].join('\n');
+    expect(audit([{ path: 'a.css', text }])).toEqual([]);
+  });
+
+  it('leaves selectors and media queries alone, though they hold a colon and a length', () => {
+    const text = '@media (max-width: 48em) { a:hover { color: var(--fgColor-accent); } }';
+    expect(audit([{ path: 'a.css', text }])).toEqual([]);
+  });
+});
+
 describe('audit, on a token a script or the markup sets', () => {
   it('counts a style attribute, setProperty and an object key as a definition', () => {
     const files = [

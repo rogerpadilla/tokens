@@ -8,6 +8,27 @@ const COLOUR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab)\(/gi;
 /** A token set in CSS or a `style` attribute (`--x: ...`), or from a script (`setProperty('--x', ...)`, `{ '--x': ... }`). */
 const DEFINITION = /(--[\w-]+)\s*:|['"](--[\w-]+)['"]\s*[:,]/g;
 const PACKAGED = ['primer.css', 'scale.css'].map((file) => readFileSync(new URL(file, import.meta.url), 'utf8'));
+/** The properties scale.css owns, and a number written in one: a time, a radius, a spacing. Zero is no value, and spacing allows a hairline nudge of 2px. */
+const SCALES = [
+  { property: /^(?:transition|animation)(?:-duration|-delay)?$/, number: /(?<![\w.-])(\d*\.?\d+)(m?s)\b/g, allows: () => false },
+  { property: /^border-(?:[a-z]+-)*radius$/, number: /(?<![\w.-])(\d*\.?\d+)(px|r?em|%)/g, allows: () => false },
+  {
+    property: /^(?:(?:padding|margin)(?:-[a-z]+)*|(?:row-|column-)?gap)$/,
+    number: /(?<![\w.-])(-?\d*\.?\d+)(px|r?em)\b/g,
+    allows: (amount, unit) => unit === 'px' && Math.abs(amount) <= 2,
+  },
+];
+
+/** Every number a declaration writes where scale.css has a token for it. */
+function offScale(css) {
+  return [...css.matchAll(/([a-z-]+)\s*:\s*([^;{}]+)/g)].flatMap(([, property, value]) => {
+    const scale = SCALES.find((candidate) => candidate.property.test(property));
+    if (!scale) return [];
+    return [...value.matchAll(scale.number)]
+      .filter(([, amount, unit]) => Number(amount) !== 0 && !scale.allows(Number(amount), unit))
+      .map(([literal]) => `${property} ${literal}`);
+  });
+}
 
 /** A stylesheet's CSS, or a component's `<style>` blocks, comments stripped; a script has none, and only defines tokens. */
 export function styleOf(path, text) {
@@ -20,13 +41,13 @@ export function tokensIn(css) {
   return new Map([...css.replace(COMMENT, '').matchAll(/(--[\w-]+)\s*:\s*([^;}]+)/g)].map(([, name, value]) => [name, value.trim()]));
 }
 
-/** What breaks the rules: a colour written anywhere but a custom property, a `var()` naming nothing anywhere in `files`. */
+/** What breaks the rules: a colour, a duration, a radius or a spacing written anywhere but a custom property, a `var()` naming nothing anywhere in `files`. */
 export function audit(files, { external = [] } = {}) {
   const styles = files.map(({ path, text }) => ({ path, css: styleOf(path, text) }));
   const defined = new Set([...files.map(({ text }) => text), ...PACKAGED].flatMap((text) => [...text.matchAll(DEFINITION)].map((match) => match[1] ?? match[2])));
   return styles.flatMap(({ path, css }) => {
     const outsideTokens = css.replace(/--[\w-]+\s*:[^;}]+/g, '');
-    const literals = [...outsideTokens.matchAll(COLOUR)].map(([match]) => `${path}: ${match} outside a token`);
+    const literals = [...[...outsideTokens.matchAll(COLOUR)].map(([match]) => match), ...offScale(outsideTokens)].map((literal) => `${path}: ${literal} outside a token`);
     const unknown = [...css.matchAll(/var\(\s*(--[\w-]+)/g)]
       .map(([, name]) => name)
       .filter((name) => !defined.has(name) && !external.some((prefix) => name.startsWith(prefix)))
