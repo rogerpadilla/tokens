@@ -54,6 +54,11 @@ describe('audit, on the scale', () => {
     expect(audit([{ path: 'a.css', text: '.icon { gap: 0.3em; } li { padding-inline-start: 1.25em; }' }])).toEqual([]);
   });
 
+  it('leaves print alone: paper is not a theme, and black on it is the right answer', () => {
+    const text = '.a { color: var(--fgColor-default); @media print { color: #000; border-top: 1px solid #000; } }';
+    expect(audit([{ path: 'a.css', text }])).toEqual([]);
+  });
+
   it('leaves selectors and media queries alone, though they hold a colon and a length', () => {
     const text = '@media (max-width: 48em) { a:hover { color: var(--fgColor-accent); } }';
     expect(audit([{ path: 'a.css', text }])).toEqual([]);

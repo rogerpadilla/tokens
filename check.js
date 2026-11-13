@@ -4,6 +4,8 @@ import { join } from 'node:path';
 import { primer } from './primer.js';
 
 const COMMENT = /\/\*[\s\S]*?\*\//g;
+/** A print block, one nesting level deep: paper is not a theme, so its literal black is the right answer. */
+const PRINT = /@media\s+print\s*\{(?:[^{}]|\{[^{}]*\})*\}/g;
 const COLOUR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab)\(/gi;
 /** A token set in CSS or a `style` attribute (`--x: ...`), or from a script (`setProperty('--x', ...)`, `{ '--x': ... }`). */
 const DEFINITION = /(--[\w-]+)\s*:|['"](--[\w-]+)['"]\s*[:,]/g;
@@ -46,7 +48,7 @@ export function tokensIn(css) {
 
 /** What breaks the rules: a colour, a duration, a radius or a spacing written anywhere but a custom property, a `var()` naming nothing anywhere in `files`. */
 export function audit(files, { external = [] } = {}) {
-  const styles = files.map(({ path, text }) => ({ path, css: styleOf(path, text) }));
+  const styles = files.map(({ path, text }) => ({ path, css: styleOf(path, text).replace(PRINT, '') }));
   const defined = new Set([...files.map(({ text }) => text), ...PACKAGED].flatMap((text) => [...text.matchAll(DEFINITION)].map((match) => match[1] ?? match[2])));
   return styles.flatMap(({ path, css }) => {
     const outsideTokens = css.replace(/--[\w-]+\s*:[^;}]+/g, '');
