@@ -51,10 +51,17 @@ export function resolve(name: string, theme: Theme): string {
   return value;
 }
 
+/** The families with an emphasis fill and a muted tint, so a filled or tinted control of any of them can hover. */
+const FAMILIES = ['accent', 'danger', 'success', 'attention'];
+
 /** What Primer leaves to a site, derived from its roles, so a site or palette restating them retints these too. */
 const DERIVED = {
-  'bgColor-accent-emphasis-hover': 'color-mix(in srgb, var(--bgColor-accent-emphasis), #000 14%)',
-  'bgColor-accent-muted-hover': 'color-mix(in srgb, var(--fgColor-accent) 26%, transparent)',
+  ...Object.fromEntries(
+    FAMILIES.flatMap((family) => [
+      [`bgColor-${family}-emphasis-hover`, `color-mix(in srgb, var(--bgColor-${family}-emphasis), #000 14%)`],
+      [`bgColor-${family}-muted-hover`, `color-mix(in srgb, var(--fgColor-${family}) 26%, transparent)`],
+    ]),
+  ),
   'fgColor-accent-hover': 'color-mix(in oklab, var(--fgColor-accent), var(--fgColor-default) 35%)',
 };
 

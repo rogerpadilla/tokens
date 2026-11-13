@@ -2,7 +2,7 @@
 
 The design tokens every site of mine reads: uql-orm.dev, variability, rogerpadilla.com, cacaua and variabilidad.
 
-- `primer.css`: GitHub Primer's colour roles, by Primer's own names (`--bgColor-default`, `--fgColor-muted`, `--borderColor-default`, ...), each a `light-dark()` pair. Generated from [`@primer/primitives`](https://github.com/primer/primitives) by `scripts/build.ts`, never edited by hand; [primer.style](https://primer.style/product/primitives/color) documents what each role is for. Beside them, the three hovers Primer leaves to a site, derived from the roles (`--bgColor-accent-emphasis-hover`, `--bgColor-accent-muted-hover`, `--fgColor-accent-hover`).
+- `primer.css`: GitHub Primer's colour roles, by Primer's own names (`--bgColor-default`, `--fgColor-muted`, `--borderColor-default`, ...), each a `light-dark()` pair. Generated from [`@primer/primitives`](https://github.com/primer/primitives) by `scripts/build.ts`, never edited by hand; [primer.style](https://primer.style/product/primitives/color) documents what each role is for. Beside them, the hovers Primer leaves to a site, derived from the roles: a fill and a tint hover for each of accent, danger, success and attention (`--bgColor-danger-emphasis-hover`, `--bgColor-danger-muted-hover`, ...), and `--fgColor-accent-hover` for a link.
 - `primer.js`: the same roles resolved, `primer['bgColor-default'].dark`, for what cannot read CSS: an email, a social card, a `theme-color` meta tag.
 - `scale.css`: one motion scale (`--ease-*`, `--duration-*`, near zero under `prefers-reduced-motion`), one type ladder (`--text-*`), one radius scale (`--radius-*`) and one spacing scale (`--space-*`).
 - `contrast.js`: WCAG contrast between two colours, hex or a browser's computed value, for a site's own palette tests. The tests here hold Primer's text and labels to 4.5:1 with it.
@@ -11,7 +11,7 @@ The design tokens every site of mine reads: uql-orm.dev, variability, rogerpadil
 ## Use
 
 ```sh
-bun add github:rogerpadilla/tokens#v1.6.2
+bun add github:rogerpadilla/tokens#v1.7.0
 ```
 
 ```css

@@ -63,6 +63,11 @@ describe('build', () => {
     expect(files['primer.css']).toContain(':root,\n[data-theme] {\n  --bgColor-accent-emphasis-hover: color-mix(');
   });
 
+  it.each(['accent', 'danger', 'success', 'attention'])('derives a fill hover and a tint hover for the %s family', (family) => {
+    expect(files['primer.css']).toContain(`  --bgColor-${family}-emphasis-hover: color-mix(in srgb, var(--bgColor-${family}-emphasis), #000 14%);\n`);
+    expect(files['primer.css']).toContain(`  --bgColor-${family}-muted-hover: color-mix(in srgb, var(--fgColor-${family}) 26%, transparent);\n`);
+  });
+
   it('gives scripts the same values, resolved, with their literal types', () => {
     expect(files['primer.js']).toContain(`  'bgColor-inset': { light: '#f6f8fa', dark: '#010409' },\n`);
     expect(files['primer.d.ts']).toContain(`  readonly 'bgColor-inset': { readonly light: '#f6f8fa'; readonly dark: '#010409' };\n`);

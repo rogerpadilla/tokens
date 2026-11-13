@@ -40,5 +40,11 @@
 [data-theme] {
   --bgColor-accent-emphasis-hover: color-mix(in srgb, var(--bgColor-accent-emphasis), #000 14%);
   --bgColor-accent-muted-hover: color-mix(in srgb, var(--fgColor-accent) 26%, transparent);
+  --bgColor-danger-emphasis-hover: color-mix(in srgb, var(--bgColor-danger-emphasis), #000 14%);
+  --bgColor-danger-muted-hover: color-mix(in srgb, var(--fgColor-danger) 26%, transparent);
+  --bgColor-success-emphasis-hover: color-mix(in srgb, var(--bgColor-success-emphasis), #000 14%);
+  --bgColor-success-muted-hover: color-mix(in srgb, var(--fgColor-success) 26%, transparent);
+  --bgColor-attention-emphasis-hover: color-mix(in srgb, var(--bgColor-attention-emphasis), #000 14%);
+  --bgColor-attention-muted-hover: color-mix(in srgb, var(--fgColor-attention) 26%, transparent);
   --fgColor-accent-hover: color-mix(in oklab, var(--fgColor-accent), var(--fgColor-default) 35%);
 }
