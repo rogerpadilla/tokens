@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { audit, palette, sources, styleOf, tokensIn } from '../check.js';
+import { audit, palette, sources, styleOf, tokensIn, unused } from '../check.js';
 
 describe('audit', () => {
   it('allows a colour only where a token is declared', () => {
@@ -62,6 +62,35 @@ describe('audit, on the scale', () => {
   it('leaves selectors and media queries alone, though they hold a colon and a length', () => {
     const text = '@media (max-width: 48em) { a:hover { color: var(--fgColor-accent); } }';
     expect(audit([{ path: 'a.css', text }])).toEqual([]);
+  });
+});
+
+describe('audit, with colourFiles', () => {
+  const files = [
+    { path: 'styles/tokens.css', text: ':root { --brand: #5c2e1e; }' },
+    { path: 'styles/card.css', text: '.card { --edge: #000; color: var(--brand); border-color: var(--edge); }' },
+  ];
+
+  it('allows a colour only in the named files, even as a token elsewhere', () => {
+    expect(audit(files, { colourFiles: ['styles/tokens.css'] })).toEqual(['styles/card.css: #000 outside a colour file']);
+  });
+
+  it('keeps allowing a colour in any token when no files are named', () => {
+    expect(audit(files)).toEqual([]);
+  });
+});
+
+describe('unused', () => {
+  it('reports a token nothing reads', () => {
+    expect(unused([{ path: 'a.css', text: ':root { --read: 1px; --dead: 2px; } .a { width: var(--read); }' }])).toEqual(['--dead']);
+  });
+
+  it('counts a mixin argument and a script definition, and a token a third party reads', () => {
+    const files = [
+      { path: 'a.css', text: ':root { --blur: 4px; --vendor-pad: 1rem; } .a { @mixin glass --blur; }' },
+      { path: 'a.ts', text: "el.style.setProperty('--row', '1rem'); const css = 'height: var(--row)';" },
+    ];
+    expect(unused(files, { consumed: ['--vendor-pad'] })).toEqual([]);
   });
 });
 

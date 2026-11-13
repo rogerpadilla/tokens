@@ -1,6 +1,6 @@
 {
   "name": "tokens",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Design tokens shared by Roger Padilla's sites: GitHub Primer's colour roles, generated from @primer/primitives, for CSS and scripts, plus one motion, radius and spacing scale and a WCAG contrast helper.",
   "license": "MIT",
   "type": "module",
@@ -9,6 +9,8 @@
     "primer.js",
     "primer.d.ts",
     "scale.css",
+    "scale.js",
+    "scale.d.ts",
     "contrast.js",
     "contrast.d.ts",
     "check.js",
@@ -17,6 +19,10 @@
   "exports": {
     "./primer.css": "./primer.css",
     "./scale.css": "./scale.css",
+    "./scale.js": {
+      "types": "./scale.d.ts",
+      "default": "./scale.js"
+    },
     "./primer.js": {
       "types": "./primer.d.ts",
       "default": "./primer.js"

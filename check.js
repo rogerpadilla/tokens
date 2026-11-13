@@ -4,6 +4,8 @@ import { join } from 'node:path';
 import { primer } from './primer.js';
 
 const COMMENT = /\/\*[\s\S]*?\*\//g;
+/** A script's line comment, matched only at the start of a line so `https://` survives. */
+const LINE_COMMENT = /^[ \t]*\/\/.*$/gm;
 /** A print block, one nesting level deep: paper is not a theme, so its literal black is the right answer. */
 const PRINT = /@media\s+print\s*\{(?:[^{}]|\{[^{}]*\})*\}/g;
 const COLOUR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab)\(/gi;
@@ -46,19 +48,41 @@ export function tokensIn(css) {
   return new Map([...css.replace(COMMENT, '').matchAll(/(--[\w-]+)\s*:\s*([^;}]+)/g)].map(([, name, value]) => [name, value.trim()]));
 }
 
-/** What breaks the rules: a colour, a duration, a radius or a spacing written anywhere but a custom property, a `var()` naming nothing anywhere in `files`. */
-export function audit(files, { external = [] } = {}) {
+/**
+ * What breaks the rules: a colour, a duration, a radius or a spacing written anywhere but a custom
+ * property, a `var()` naming nothing anywhere in `files`. With `colourFiles`, a colour is allowed only
+ * in those files, a token elsewhere included.
+ */
+export function audit(files, { external = [], colourFiles } = {}) {
   const styles = files.map(({ path, text }) => ({ path, css: styleOf(path, text).replace(PRINT, '') }));
   const defined = new Set([...files.map(({ text }) => text), ...PACKAGED].flatMap((text) => [...text.matchAll(DEFINITION)].map((match) => match[1] ?? match[2])));
   return styles.flatMap(({ path, css }) => {
     const outsideTokens = css.replace(/--[\w-]+\s*:[^;}]+/g, '');
-    const literals = [...[...outsideTokens.matchAll(COLOUR)].map(([match]) => match), ...offScale(outsideTokens)].map((literal) => `${path}: ${literal} outside a token`);
+    const colours = colourFiles
+      ? colourFiles.some((file) => path === file || path.endsWith(`/${file}`))
+        ? []
+        : [...css.matchAll(COLOUR)].map(([match]) => `${path}: ${match} outside a colour file`)
+      : [...outsideTokens.matchAll(COLOUR)].map(([match]) => `${path}: ${match} outside a token`);
+    const literals = [...colours, ...offScale(outsideTokens).map((literal) => `${path}: ${literal} outside a token`)];
     const unknown = [...css.matchAll(/var\(\s*(--[\w-]+)/g)]
       .map(([, name]) => name)
       .filter((name) => !defined.has(name) && !external.some((prefix) => name.startsWith(prefix)))
       .map((name) => `${path}: ${name} is defined nowhere`);
     return [...literals, ...unknown];
   });
+}
+
+/** Every custom property `files` define that nothing in them reads, by `var()` or by name as a mixin's argument; `consumed` names those a third party reads. */
+export function unused(files, { consumed = [] } = {}) {
+  const texts = files.map(({ text }) => text.replace(COMMENT, '').replace(LINE_COMMENT, ''));
+  const defined = new Set(texts.flatMap((text) => [...text.matchAll(DEFINITION)].map((match) => match[1] ?? match[2])));
+  const read = new Set(
+    texts.flatMap((text) => [
+      ...[...text.matchAll(/var\(\s*(--[\w-]+)/g)].map(([, name]) => name),
+      ...[...text.matchAll(/@mixin\s+[\w-]+\s+([^;{]+)/g)].flatMap(([, args]) => args.match(/--[\w-]+/g) ?? []),
+    ]),
+  );
+  return [...defined].filter((name) => !read.has(name) && !consumed.includes(name)).sort();
 }
 
 /** The stylesheets, components and scripts under `dir`, for `audit()`; a path starting with one in `skip` is left out. */

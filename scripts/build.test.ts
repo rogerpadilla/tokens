@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { build, parseTheme, resolve } from './build.ts';
+import { build, buildScale, parseTheme, resolve } from './build.ts';
 
 const LIGHT = `/** header */
 [data-color-mode="light"] {
@@ -21,6 +21,15 @@ const DARK = `[data-color-mode="dark"] {
   --bgColor-inset: #010409;
   --fgColor-default: #f0f6fc;
 }`;
+
+describe('buildScale', () => {
+  const css = ':root {\n  --duration-fast: 150ms;\n  --duration-base: 250ms;\n  --duration-slow: 400ms;\n}\n@media (prefers-reduced-motion: reduce) {\n  :root { --duration-fast: 0.01ms; }\n}';
+
+  it("gives scripts the duration scale in milliseconds, from scale.css's first block", () => {
+    expect(buildScale(css)['scale.js']).toContain('export const duration = { fast: 150, base: 250, slow: 400 };\n');
+    expect(buildScale(css)['scale.d.ts']).toContain('export declare const duration: { readonly fast: 150; readonly base: 250; readonly slow: 400 };\n');
+  });
+});
 
 describe('parseTheme', () => {
   it('reads the first block only, without comments', () => {
